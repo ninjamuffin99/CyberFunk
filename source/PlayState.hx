@@ -25,8 +25,6 @@ class PlayState extends FlxState
 	{
 		songInit();
 		
-		
-		
 		bg = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0xff501111);
 		bg.scrollFactor.set(0, 0);
 		add(bg);
@@ -41,6 +39,9 @@ class PlayState extends FlxState
 		
 		_player = new Player(16 * 5, 16 * 5);
 		add(_player);
+		
+		persistentUpdate = true;
+		persistentDraw = true;
 		
 		FlxG.camera.follow(_player, FlxCameraFollowStyle.LOCKON, 0.8);
 		
@@ -71,6 +72,11 @@ class PlayState extends FlxState
 		songHandling();
 		
 		bg.alpha -= FlxG.elapsed / 2;
+		
+		if (FlxG.keys.justPressed.R)
+		{
+			openSubState(new HackSubState(_song));
+		}
 		
 		super.update(elapsed);
 	}
