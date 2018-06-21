@@ -23,13 +23,14 @@ class Enemy extends CharBase
 	{
 		super.update(elapsed);
 		
-		
-		
 	}
 	
 	public function onBeat():Void
 	{
-		moveTo(FlxG.random.getObject([FlxObject.LEFT, FlxObject.RIGHT, FlxObject.UP, FlxObject.DOWN]));
+		if (FlxG.random.bool())
+		{
+			// moveTo(FlxG.random.getObject([FlxObject.LEFT, FlxObject.RIGHT, FlxObject.UP, FlxObject.DOWN]));
+		}
 	}
 	
 }

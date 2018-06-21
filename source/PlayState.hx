@@ -30,6 +30,8 @@ class PlayState extends FlxState
 	private var _beatNoise:Float = 0;
 	private var _playerNoise:Float = 0;
 	
+	private var noiseDiff:Float = 0;
+	
 	override public function create():Void
 	{
 		songInit();
@@ -109,7 +111,7 @@ class PlayState extends FlxState
 		_barBeats.scale.y = _beatNoise;
 		_barBeatsKeys.scale.y = _playerNoise;
 		
-		var noiseDiff:Float = _beatNoise - _playerNoise;
+		noiseDiff = _beatNoise - _playerNoise;
 		
 		// noticed
 		if (noiseDiff > 0.2 || noiseDiff < -0.2)
@@ -117,7 +119,7 @@ class PlayState extends FlxState
 			// noticed()
 		}
 		
-		FlxG.watch.addQuick("Noisey: ", _beatNoise - _playerNoise);
+		FlxG.watch.addQuick("Noisey: ", noiseDiff);
 		
 		if (FlxG.keys.justPressed.R)
 		{
@@ -135,6 +137,21 @@ class PlayState extends FlxState
 		{
 			_enemy.moveToNextTile = false;
 		}
+		
+		
+		if (FlxG.overlap(_player, _enemy))
+		{
+			// noticed
+			if (isNoisy(0.5))
+			{
+				FlxG.log.add("HURT!!!");
+			}
+			else
+			{
+				FlxG.log.add("HACKED!!");
+			}
+		}
+		
 		
 		if (_player.justPressedKeys)
 		{
@@ -164,5 +181,17 @@ class PlayState extends FlxState
 		}
 		else
 			canHit = false;
+	}
+	
+	private function isNoisy(noiseAmount:Float):Bool
+	{
+		if (noiseDiff > noiseAmount || noiseDiff < -noiseAmount)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 }

@@ -55,8 +55,6 @@ class CharBase extends FlxSprite
 		
 	public function moveTo(Direction:Int):Void
 	{
-		
-		
 		// Only change direction if not already moving
 		if (!moveToNextTile)
 		{
