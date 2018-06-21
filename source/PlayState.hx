@@ -5,11 +5,14 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.system.FlxSound;
+import flixel.util.FlxColor;
 
 class PlayState extends FlxState
 {
 	private var _player:Player;
 	private var bg:FlxSprite;
+	
+	private var _enemy:Enemy;
 	
 	private var _song:FlxSound;
 	private var lastBeat:Float;
@@ -20,6 +23,12 @@ class PlayState extends FlxState
 	private var canHit:Bool = false;
 	
 	public var _map:TiledLevel;
+	
+	private var _barBeats:FlxSprite;
+	private var _barBeatsKeys:FlxSprite;
+	
+	private var _beatNoise:Float = 0;
+	private var _playerNoise:Float = 0;
 	
 	override public function create():Void
 	{
@@ -40,13 +49,28 @@ class PlayState extends FlxState
 		_player = new Player(16 * 5, 16 * 5);
 		add(_player);
 		
+		_enemy = new Enemy(_player.x + 16, _player.y + 16);
+		add(_enemy);
+		
 		persistentUpdate = true;
 		persistentDraw = true;
 		
 		FlxG.camera.follow(_player, FlxCameraFollowStyle.LOCKON, 0.8);
 		
+		initHUD();
 		
 		super.create();
+	}
+	
+	private function initHUD():Void
+	{
+		_barBeats = new FlxSprite(30, 75).makeGraphic(8, 55, FlxColor.BLUE);
+		_barBeats.scrollFactor.set();
+		add(_barBeats);
+		
+		_barBeatsKeys = new FlxSprite(42, 75).makeGraphic(8, 55, FlxColor.BLUE);
+		_barBeatsKeys.scrollFactor.set();
+		add(_barBeatsKeys);
 	}
 	
 	
@@ -65,13 +89,35 @@ class PlayState extends FlxState
 		_song.time = 0;
 		lastBeat = 0;
 		totalBeats = 0;
-	}
+	} 
 
 	override public function update(elapsed:Float):Void
 	{
 		songHandling();
 		
 		bg.alpha -= FlxG.elapsed / 2;
+		if (_beatNoise > 0)
+		{
+			_beatNoise -= FlxG.elapsed / (Conductor.crochet * 0.001);
+		}
+		
+		if (_playerNoise > 0)
+		{
+			_playerNoise -= FlxG.elapsed / (Conductor.crochet * 0.001);
+		}
+		
+		_barBeats.scale.y = _beatNoise;
+		_barBeatsKeys.scale.y = _playerNoise;
+		
+		var noiseDiff:Float = _beatNoise - _playerNoise;
+		
+		// noticed
+		if (noiseDiff > 0.2 || noiseDiff < -0.2)
+		{
+			// noticed()
+		}
+		
+		FlxG.watch.addQuick("Noisey: ", _beatNoise - _playerNoise);
 		
 		if (FlxG.keys.justPressed.R)
 		{
@@ -79,6 +125,21 @@ class PlayState extends FlxState
 		}
 		
 		super.update(elapsed);
+		
+		if (_map.collideWithLevel(_player))
+		{
+			_player.moveToNextTile = false;
+		}
+		
+		if (_map.collideWithLevel(_enemy))
+		{
+			_enemy.moveToNextTile = false;
+		}
+		
+		if (_player.justPressedKeys)
+		{
+			_playerNoise = 1;
+		}
 	}
 	
 	private function songHandling():Void
@@ -93,13 +154,15 @@ class PlayState extends FlxState
 			// every beat 	
 			if (Conductor.songPosition > lastBeat + Conductor.crochet)
 			{
+				_enemy.onBeat();
+				
 				lastBeat += Conductor.crochet;
 				totalBeats += 1;
 				bg.alpha = 1;
+				_beatNoise = 1;
 			}
 		}
 		else
 			canHit = false;
-
 	}
 }

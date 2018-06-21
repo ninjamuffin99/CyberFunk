@@ -28,6 +28,7 @@ class HackSubState extends FlxSubState
 		
 		bar = new FlxSprite(0, 16);
 		bar.makeGraphic(FlxG.width, 5);
+		bar.scrollFactor.set();
 		add(bar);
 		
 		grpNotes = new FlxTypedGroup<HackNote>();
@@ -40,6 +41,7 @@ class HackSubState extends FlxSubState
 			newNote.notePos = FlxG.random.int(0, 3);
 			newNote.x = ((FlxG.width / 4) * newNote.notePos);
 			newNote.strumTime = Conductor.songPosition + Conductor.crochet + (Conductor.crochet * i );
+			newNote.scrollFactor.set();
 			grpNotes.add(newNote);
 		}
 	}
