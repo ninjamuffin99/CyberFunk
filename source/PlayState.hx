@@ -2,17 +2,20 @@ package;
 
 import flixel.FlxCamera.FlxCameraFollowStyle;
 import flixel.FlxG;
+import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.system.FlxSound;
 import flixel.util.FlxColor;
 
 class PlayState extends FlxState
 {
 	private var _player:Player;
+	public var player_start:FlxObject;
 	private var bg:FlxSprite;
 	
-	private var _enemy:Enemy;
+	public var _grpEnemies:FlxTypedGroup<Enemy>;
 	
 	private var _song:FlxSound;
 	private var lastBeat:Float;
@@ -40,6 +43,8 @@ class PlayState extends FlxState
 		bg.scrollFactor.set(0, 0);
 		add(bg);
 		
+		_grpEnemies = new FlxTypedGroup<Enemy>();
+		
 		_map = new TiledLevel("assets/data/testMap.tmx", this);
 		add(_map.backgroundLayer);
 		add(_map.imagesLayer);
@@ -48,11 +53,11 @@ class PlayState extends FlxState
 		add(_map.objectsLayer);
 		add(_map.foregroundTiles);
 		
-		_player = new Player(16 * 5, 16 * 5);
+		_player = new Player(player_start.x, player_start.y);
 		add(_player);
 		
-		_enemy = new Enemy(_player.x + 16, _player.y + 16);
-		add(_enemy);
+		
+		add(_grpEnemies);
 		
 		persistentUpdate = true;
 		persistentDraw = true;
@@ -133,12 +138,13 @@ class PlayState extends FlxState
 			_player.moveToNextTile = false;
 		}
 		
+		/*
 		if (_map.collideWithLevel(_enemy))
 		{
 			_enemy.moveToNextTile = false;
 		}
-		
-		
+		*/
+		/*
 		if (FlxG.overlap(_player, _enemy))
 		{
 			// noticed
@@ -150,7 +156,7 @@ class PlayState extends FlxState
 			{
 				FlxG.log.add("HACKED!!");
 			}
-		}
+		}*/
 		
 		
 		if (_player.justPressedKeys)
@@ -171,7 +177,10 @@ class PlayState extends FlxState
 			// every beat 	
 			if (Conductor.songPosition > lastBeat + Conductor.crochet)
 			{
-				_enemy.onBeat();
+				_grpEnemies.forEachAlive(function(e:Enemy)
+				{
+					e.onBeat(); 
+				});
 				
 				lastBeat += Conductor.crochet;
 				totalBeats += 1;

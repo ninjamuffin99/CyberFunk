@@ -224,16 +224,16 @@ class TiledLevel extends TiledMap
 		// objects in tiled are aligned bottom-left (top-left in flixel)
 		if (o.gid != -1)
 			y -= g.map.getGidOwner(o.gid).tileHeight;
-		/*
+		
 		switch (o.type.toLowerCase())
 		{
 			
 			case "enemy":
 				var p:FlxPath = getPathData(o);
-				var enemy = new Enemy(x, y, p);
+				var enemy = new Enemy(x, y);
 
 				state._grpEnemies.add(enemy);
-				state.totalEnemeis += 1;
+			/*	
 			case "lockers":
 				var locker = new Locker(x, y);
 				locker.makeGraphic(o.width, o.height, FlxColor.GRAY);
@@ -246,12 +246,14 @@ class TiledLevel extends TiledMap
 			case "dialogue":
 				var dialogue = new DialogueTrigger(x, y, o.width, o.height);
 				state._grpDialogues.add(dialogue);
+				*/
 			case "player_start":
 				
 				state.player_start = new FlxObject(x, y, 1, 1);
 				group.add(state.player_start);
 				
 				FlxG.log.add("Player object added");
+			/*	
 			case "player_exit":
 				state.levelExit = new FlxObject(x, y, o.width, o.height);
 				state.add(state.levelExit);
@@ -281,8 +283,9 @@ class TiledLevel extends TiledMap
 				state.exit = exit;
 				group.add(exit);
 				
+				*/
 		}
-		*/
+		
 	}
 
 	public function loadImages()
