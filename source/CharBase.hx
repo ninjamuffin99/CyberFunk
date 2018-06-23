@@ -11,18 +11,19 @@ import flixel.system.FlxAssets.FlxGraphicAsset;
 class CharBase extends FlxSprite 
 {
 	
-	private var TILE_SIZE:Int = 16;
-	public var MOVEMENT_SPEED:Int = 4;
+	private var TILE_SIZE:Int = 128;
+	public var MOVEMENT_SPEED:Int = 8;
 
 	public var moveToNextTile:Bool;
 
 	var moveDirection:Int;
 	
+	public var hp:Float = 2;
+	public var hpMax:Float = 2;
 
 	public function new(?X:Float=0, ?Y:Float=0, ?SimpleGraphic:FlxGraphicAsset) 
 	{
 		super(X, Y, SimpleGraphic);
-		
 	}
 	
 	override public function update(elapsed:Float):Void 

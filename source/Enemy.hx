@@ -15,8 +15,7 @@ class Enemy extends CharBase
 	{
 		super(X, Y, SimpleGraphic);
 		
-		makeGraphic(16, 16);
-		
+		makeGraphic(TILE_SIZE, TILE_SIZE);
 	}
 	
 	override public function update(elapsed:Float):Void 
@@ -29,8 +28,7 @@ class Enemy extends CharBase
 	{
 		if (FlxG.random.bool())
 		{
-			// moveTo(FlxG.random.getObject([FlxObject.LEFT, FlxObject.RIGHT, FlxObject.UP, FlxObject.DOWN]));
+			 moveTo(FlxG.random.getObject([FlxObject.LEFT, FlxObject.RIGHT, FlxObject.UP, FlxObject.DOWN]));
 		}
 	}
-	
 }

@@ -7,6 +7,7 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.system.FlxSound;
+import flixel.text.FlxText;
 import flixel.util.FlxColor;
 
 class PlayState extends FlxState
@@ -27,8 +28,13 @@ class PlayState extends FlxState
 	
 	public var _map:TiledLevel;
 	
+	// Hud shit
+	private var _grpHUD:FlxTypedGroup<FlxSprite>;
+	
 	private var _barBeats:FlxSprite;
 	private var _barBeatsKeys:FlxSprite;
+	
+	private var _txtPlayerHP:FlxText;
 	
 	private var _beatNoise:Float = 0;
 	private var _playerNoise:Float = 0;
@@ -37,6 +43,8 @@ class PlayState extends FlxState
 	
 	override public function create():Void
 	{
+		FlxG.camera.zoom = 0.6;
+		
 		songInit();
 		
 		bg = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0xff501111);
@@ -45,17 +53,10 @@ class PlayState extends FlxState
 		
 		_grpEnemies = new FlxTypedGroup<Enemy>();
 		
-		_map = new TiledLevel("assets/data/testMap.tmx", this);
-		add(_map.backgroundLayer);
-		add(_map.imagesLayer);
-		add(_map.BGObjects);
-		add(_map.foregroundObjects);
-		add(_map.objectsLayer);
-		add(_map.foregroundTiles);
+		initMap();
 		
 		_player = new Player(player_start.x, player_start.y);
 		add(_player);
-		
 		
 		add(_grpEnemies);
 		
@@ -69,15 +70,36 @@ class PlayState extends FlxState
 		super.create();
 	}
 	
+	private function initMap():Void
+	{
+		_map = new TiledLevel("assets/data/testMap.tmx", this);
+		add(_map.backgroundLayer);
+		add(_map.imagesLayer);
+		add(_map.BGObjects);
+		add(_map.foregroundObjects);
+		add(_map.objectsLayer);
+		add(_map.foregroundTiles);
+	}
+	
 	private function initHUD():Void
 	{
+		_grpHUD = new FlxTypedGroup<FlxSprite>();
+		add(_grpHUD);
+		
 		_barBeats = new FlxSprite(30, 75).makeGraphic(8, 55, FlxColor.BLUE);
-		_barBeats.scrollFactor.set();
-		add(_barBeats);
+		_grpHUD.add(_barBeats);
 		
 		_barBeatsKeys = new FlxSprite(42, 75).makeGraphic(8, 55, FlxColor.BLUE);
-		_barBeatsKeys.scrollFactor.set();
-		add(_barBeatsKeys);
+		_grpHUD.add(_barBeatsKeys);
+		
+		_txtPlayerHP = new FlxText(10, 10, 0, "2/2", 12);
+		_grpHUD.add(_txtPlayerHP);
+		
+		// sets each member in the group to not scroll
+		_grpHUD.forEach(function(s:FlxSprite)
+		{
+			s.scrollFactor.set(); 
+		});
 	}
 	
 	
@@ -113,16 +135,7 @@ class PlayState extends FlxState
 			_playerNoise -= FlxG.elapsed / (Conductor.crochet * 0.001);
 		}
 		
-		_barBeats.scale.y = _beatNoise;
-		_barBeatsKeys.scale.y = _playerNoise;
-		
 		noiseDiff = _beatNoise - _playerNoise;
-		
-		// noticed
-		if (noiseDiff > 0.2 || noiseDiff < -0.2)
-		{
-			// noticed()
-		}
 		
 		FlxG.watch.addQuick("Noisey: ", noiseDiff);
 		
@@ -138,31 +151,15 @@ class PlayState extends FlxState
 			_player.moveToNextTile = false;
 		}
 		
-		/*
-		if (_map.collideWithLevel(_enemy))
-		{
-			_enemy.moveToNextTile = false;
-		}
-		*/
-		/*
-		if (FlxG.overlap(_player, _enemy))
-		{
-			// noticed
-			if (isNoisy(0.5))
-			{
-				FlxG.log.add("HURT!!!");
-			}
-			else
-			{
-				FlxG.log.add("HACKED!!");
-			}
-		}*/
+		_grpEnemies.forEachAlive(enemyLogic);
 		
 		
 		if (_player.justPressedKeys)
 		{
 			_playerNoise = 1;
 		}
+		
+		updateHUD();
 	}
 	
 	private function songHandling():Void
@@ -190,6 +187,41 @@ class PlayState extends FlxState
 		}
 		else
 			canHit = false;
+	}
+	
+	private function enemyLogic(_enemy:Enemy):Void
+	{
+		if (_map.collideWithLevel(_enemy))
+		{
+			_enemy.moveToNextTile = false;
+		}
+		
+		
+		/*
+		if (FlxG.collide(_player, _enemy))
+		{
+			_player.moveToNextTile = false;
+			_enemy.moveToNextTile = false;
+			
+			// noticed
+			if (isNoisy(0.5))
+			{
+				FlxG.log.add("HURT!!!");
+			}
+			else
+			{
+				FlxG.log.add("HACKED!!");
+			}
+		}
+		*/
+	}
+	
+	private function updateHUD():Void
+	{
+		_txtPlayerHP.text = _player.hp + "/" + _player.hpMax;
+		
+		_barBeats.scale.y = _beatNoise;
+		_barBeatsKeys.scale.y = _playerNoise;
 	}
 	
 	private function isNoisy(noiseAmount:Float):Bool
