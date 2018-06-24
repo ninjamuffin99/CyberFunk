@@ -12,7 +12,7 @@ class CharBase extends FlxSprite
 {
 	
 	private var TILE_SIZE:Int = 128;
-	public var MOVEMENT_SPEED:Int = 8;
+	public var MOVEMENT_SPEED:Int = 16;
 
 	public var moveToNextTile:Bool;
 
@@ -63,5 +63,4 @@ class CharBase extends FlxSprite
 			moveToNextTile = true;
 		}
 	}
-	
 }

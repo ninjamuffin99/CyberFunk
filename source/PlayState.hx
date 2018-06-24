@@ -6,9 +6,14 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.math.FlxAngle;
+import flixel.math.FlxMath;
+import flixel.math.FlxPoint;
 import flixel.system.FlxSound;
 import flixel.text.FlxText;
+import flixel.tile.FlxBaseTilemap.FlxTilemapDiagonalPolicy;
 import flixel.util.FlxColor;
+import flixel.util.FlxPath;
 
 class PlayState extends FlxState
 {
@@ -174,10 +179,7 @@ class PlayState extends FlxState
 			// every beat 	
 			if (Conductor.songPosition > lastBeat + Conductor.crochet)
 			{
-				_grpEnemies.forEachAlive(function(e:Enemy)
-				{
-					e.onBeat(); 
-				});
+				_grpEnemies.forEachAlive(enemyLogicOnBeat);
 				
 				lastBeat += Conductor.crochet;
 				totalBeats += 1;
@@ -191,29 +193,54 @@ class PlayState extends FlxState
 	
 	private function enemyLogic(_enemy:Enemy):Void
 	{
+		if (_enemy.isOnScreen())
+		{
+			_enemy.alertness = noiseDiff;
+		}
+		
 		if (_map.collideWithLevel(_enemy))
 		{
 			_enemy.moveToNextTile = false;
 		}
-		
-		
-		/*
-		if (FlxG.collide(_player, _enemy))
+	}
+	
+	private function enemyLogicOnBeat(_enemy:Enemy):Void
+	{
+		if (_enemy.alerted)
 		{
-			_player.moveToNextTile = false;
-			_enemy.moveToNextTile = false;
+			var pathPoints:Array<FlxPoint> = _map.collidableTileLayers[0].findPath(
+					FlxPoint.get(_enemy.x + _enemy.width / 2, _enemy.y + _enemy.height / 2),
+					FlxPoint.get(_player.x + _player.width / 2, _player.y + _player.height / 2), true, false, FlxTilemapDiagonalPolicy.NONE);
+				
+			if (pathPoints != null)
+			{
+				_enemy.path.nodes = pathPoints;
 			
-			// noticed
-			if (isNoisy(0.5))
-			{
-				FlxG.log.add("HURT!!!");
+				var pathAngle:Float = FlxAngle.asDegrees(Math.atan2(pathPoints[1].y - pathPoints[0].y, pathPoints[1].x - pathPoints[0].x));
+				
+				FlxG.log.add("Path angle: " + pathAngle);
+				
+				
+				switch(pathAngle)
+				{
+					case 0:
+						_enemy.moveTo(FlxObject.RIGHT);
+					case 90:
+						_enemy.moveTo(FlxObject.DOWN);
+					case -90:
+						_enemy.moveTo(FlxObject.UP);
+					case 180:
+						_enemy.moveTo(FlxObject.LEFT);
+				}
+				
 			}
-			else
-			{
-				FlxG.log.add("HACKED!!");
-			}
+			
 		}
-		*/
+		else
+		{
+			_enemy.onBeat(); 
+		}
+		
 	}
 	
 	private function updateHUD():Void

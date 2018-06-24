@@ -1,0 +1,4 @@
+get stealth shit going
+	get it going where there are two different bots
+		proximity bots
+		line of sight bots
