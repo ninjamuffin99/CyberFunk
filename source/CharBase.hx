@@ -59,6 +59,7 @@ class CharBase extends FlxSprite
 		// Only change direction if not already moving
 		if (!moveToNextTile)
 		{
+			facing = Direction;
 			moveDirection = Direction;
 			moveToNextTile = true;
 		}

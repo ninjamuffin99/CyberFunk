@@ -1,10 +1,12 @@
 package;
 
+import flixel.FlxCamera;
 import flixel.FlxCamera.FlxCameraFollowStyle;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.addons.display.FlxStarField.FlxStarField3D;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxAngle;
 import flixel.math.FlxMath;
@@ -198,11 +200,22 @@ class PlayState extends FlxState
 			_enemy.alertness = noiseDiff;
 		}
 		
+		// vision logic simple
+		if (_map.collidableTileLayers[0].ray(_enemy.getMidpoint(), _player.getMidpoint()) && FlxMath.isDistanceWithin(_player, _enemy, _player.width * 2.1))
+		{
+			_enemy.canSeePlayer = true;
+		}
+		else
+		{
+			_enemy.canSeePlayer = false;
+		}
+		
 		if (_map.collideWithLevel(_enemy))
 		{
 			_enemy.moveToNextTile = false;
 		}
 	}
+	
 	
 	private function enemyLogicOnBeat(_enemy:Enemy):Void
 	{
@@ -214,33 +227,16 @@ class PlayState extends FlxState
 				
 			if (pathPoints != null)
 			{
-				_enemy.path.nodes = pathPoints;
-			
-				var pathAngle:Float = FlxAngle.asDegrees(Math.atan2(pathPoints[1].y - pathPoints[0].y, pathPoints[1].x - pathPoints[0].x));
-				
-				FlxG.log.add("Path angle: " + pathAngle);
-				
-				
-				switch(pathAngle)
+				if (_enemy.path == null)
 				{
-					case 0:
-						_enemy.moveTo(FlxObject.RIGHT);
-					case 90:
-						_enemy.moveTo(FlxObject.DOWN);
-					case -90:
-						_enemy.moveTo(FlxObject.UP);
-					case 180:
-						_enemy.moveTo(FlxObject.LEFT);
+					_enemy.path = new FlxPath();
 				}
 				
+				_enemy.path.nodes = pathPoints;
 			}
-			
-		}
-		else
-		{
-			_enemy.onBeat(); 
 		}
 		
+		_enemy.onBeat(); 
 	}
 	
 	private function updateHUD():Void

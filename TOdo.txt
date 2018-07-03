@@ -2,3 +2,19 @@ get stealth shit going
 	get it going where there are two different bots
 		proximity bots
 		line of sight bots
+
+get different levels going, so you have a goal for testing
+
+get a better line of sight system going, so that you have to be in a certain proximity to the bot and also in a certain angle and raycast and shit
+
+maybe get the hacking segments going?
+
+main menu shit
+pause menu shit
+
+different music?
+better interaction between the robots and player
+dialogue and story shit
+tutorial shit
+get it so that enemies follow paths
+make it so that if they go off path, they return to their routine and shit
