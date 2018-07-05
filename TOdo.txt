@@ -1,11 +1,8 @@
-get stealth shit going
-	get it going where there are two different bots
-		proximity bots
-		line of sight bots
+MAIN DEISNG DEICISION:
+	IF YOU WANT TO BE MORE STEALTHY YOU NEED TO STAY ON BEAT ALWAYS
 
 get different levels going, so you have a goal for testing
 
-get a better line of sight system going, so that you have to be in a certain proximity to the bot and also in a certain angle and raycast and shit
 
 maybe get the hacking segments going?
 
@@ -18,3 +15,20 @@ dialogue and story shit
 tutorial shit
 get it so that enemies follow paths
 make it so that if they go off path, they return to their routine and shit
+
+some sort of interaction between player and enemy
+	sneak up behind them to hack
+
+some doors need specific keys that you steal from enemies
+
+stuff like doors you need to pick lock open and the faster you do it, the more noise you make
+
+you start in darkness
+
+some sort of alert status similar to Metal Gear Solid
+
+you have to keep moving or you get spotted
+
+but how do i make it so that when you move around, it doesnt seem so repetetive?
+maybe it forces you to go in different tiles? Like you leave a trail?
+

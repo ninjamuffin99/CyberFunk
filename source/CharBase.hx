@@ -2,6 +2,7 @@ package;
 
 import flixel.FlxObject;
 import flixel.FlxSprite;
+import flixel.addons.api.FlxKongregate;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 
 /**
@@ -20,6 +21,8 @@ class CharBase extends FlxSprite
 	
 	public var hp:Float = 2;
 	public var hpMax:Float = 2;
+	
+	public var angleFacing:Float = 0;
 
 	public function new(?X:Float=0, ?Y:Float=0, ?SimpleGraphic:FlxGraphicAsset) 
 	{
@@ -50,15 +53,21 @@ class CharBase extends FlxSprite
 		if ((x % TILE_SIZE == 0) && (y % TILE_SIZE == 0))
 		{
 			moveToNextTile = false;
+			if (path != null)
+			{
+				path.active = false;
+			}
 		}
 	}
 	
 		
-	public function moveTo(Direction:Int):Void
+	public function moveTo(Direction:Int, angleDir:Float = 0):Void
 	{
 		// Only change direction if not already moving
 		if (!moveToNextTile)
 		{
+			angleFacing = angleDir;
+			
 			facing = Direction;
 			moveDirection = Direction;
 			moveToNextTile = true;

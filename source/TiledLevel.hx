@@ -231,32 +231,18 @@ class TiledLevel extends TiledMap
 			case "enemy":
 				var p:FlxPath = getPathData(o);
 				var enemy = new Enemy(x, y, p);
-
+				
 				state._grpEnemies.add(enemy);
-			/*	
-			case "lockers":
-				var locker = new Locker(x, y);
-				locker.makeGraphic(o.width, o.height, FlxColor.GRAY);
-				state._grpLockers.add(locker);
-			
-			case "schoolobject":
-				var schoolObject = new SchoolObject(x, y, o.name);
-				schoolObject.angle = o.angle;
-				state._grpCollidableObjects.add(schoolObject);
-			case "dialogue":
-				var dialogue = new DialogueTrigger(x, y, o.width, o.height);
-				state._grpDialogues.add(dialogue);
-				*/
 			case "player_start":
 				
 				state.player_start = new FlxObject(x, y, 1, 1);
 				group.add(state.player_start);
 				
 				FlxG.log.add("Player object added");
-			/*	
 			case "player_exit":
 				state.levelExit = new FlxObject(x, y, o.width, o.height);
 				state.add(state.levelExit);
+			/*	
 			case "textidk":
 				var text = new FlxText(x, y, o.width, o.name, 16);
 				

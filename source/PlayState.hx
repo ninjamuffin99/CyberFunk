@@ -21,6 +21,7 @@ class PlayState extends FlxState
 {
 	private var _player:Player;
 	public var player_start:FlxObject;
+	public var levelExit:FlxObject;
 	private var bg:FlxSprite;
 	
 	public var _grpEnemies:FlxTypedGroup<Enemy>;
@@ -47,6 +48,13 @@ class PlayState extends FlxState
 	private var _playerNoise:Float = 0;
 	
 	private var noiseDiff:Float = 0;
+	
+	
+	public var curLevel:Int = 0;
+	public var levelsArray:Array<String> =
+	[
+		"assets/data/testMap.tmx"
+	];
 	
 	override public function create():Void
 	{
@@ -79,7 +87,7 @@ class PlayState extends FlxState
 	
 	private function initMap():Void
 	{
-		_map = new TiledLevel("assets/data/testMap.tmx", this);
+		_map = new TiledLevel(levelsArray[curLevel], this);
 		add(_map.backgroundLayer);
 		add(_map.imagesLayer);
 		add(_map.BGObjects);
@@ -109,6 +117,35 @@ class PlayState extends FlxState
 		});
 	}
 	
+	private function reloadMap():Void
+	{
+		remove(_map.backgroundLayer);
+		remove(_map.imagesLayer);
+		remove(_map.BGObjects);
+		remove(_map.foregroundObjects);
+		remove(_map.objectsLayer);
+		remove(_map.foregroundTiles);
+		
+		remove(_grpHUD);
+		
+		_grpEnemies.forEachExists(function(e:Enemy){_grpEnemies.remove(e); });
+		
+		_map = new TiledLevel(levelsArray[curLevel], this);
+		
+		_player.setPosition(player_start.x, player_start.y);
+		
+		add(_map.backgroundLayer);
+		add (_map.imagesLayer);
+		//the _map.foregroundLayer is added later so that it's above the enemies and shit
+		add(_map.BGObjects);
+		add(_map.foregroundObjects);
+		add(_map.objectsLayer);
+		
+		add(_map.foregroundTiles);
+		
+		add(_grpHUD);
+	}
+	
 	
 	private function songInit():Void
 	{
@@ -129,6 +166,12 @@ class PlayState extends FlxState
 
 	override public function update(elapsed:Float):Void
 	{
+		
+		if (FlxG.overlap(levelExit, _player))
+		{
+			reloadMap();
+		}
+		
 		songHandling();
 		
 		bg.alpha -= FlxG.elapsed / 2;
@@ -142,9 +185,15 @@ class PlayState extends FlxState
 			_playerNoise -= FlxG.elapsed / (Conductor.crochet * 0.001);
 		}
 		
-		noiseDiff = _beatNoise - _playerNoise;
+		if (_playerNoise > 0)
+		{
+			noiseDiff = _beatNoise - _playerNoise;
+		}
+		else
+		{
+			noiseDiff = 0;
+		}
 		
-		FlxG.watch.addQuick("Noisey: ", noiseDiff);
 		
 		if (FlxG.keys.justPressed.R)
 		{
@@ -199,23 +248,53 @@ class PlayState extends FlxState
 		{
 			_enemy.alertness = noiseDiff;
 		}
-		
-		// vision logic simple
-		if (_map.collidableTileLayers[0].ray(_enemy.getMidpoint(), _player.getMidpoint()) && FlxMath.isDistanceWithin(_player, _enemy, _player.width * 2.1))
-		{
-			_enemy.canSeePlayer = true;
-		}
 		else
 		{
-			_enemy.canSeePlayer = false;
+			_enemy.alertness = 0;
+		}
+		
+		// vision logic simple
+		if (_map.collidableTileLayers[0].ray(_enemy.getMidpoint(), _player.getMidpoint()) && FlxMath.isDistanceWithin(_player, _enemy, _player.width * 5.1))
+		{
+			var rads:Float = Math.atan2(_player.getMidpoint().y - _enemy.getMidpoint().y, _player.getMidpoint().x - _enemy.getMidpoint().x);
+			var degs = FlxAngle.asDegrees(rads);
+			
+			var angleView:Float = 35;
+			
+			var minView:Float = FlxMath.bound(_enemy.angleFacing - angleView, -179.9, 180);
+			var maxView:Float = FlxMath.bound(_enemy.angleFacing + angleView, -179.9, 180);
+			
+			if (degs >= minView && degs <= _enemy.angleFacing + maxView)
+			{
+				_enemy.canSeePlayer = true;
+			}
+			else
+			{
+				_enemy.canSeePlayer = false;
+			}
 		}
 		
 		if (_map.collideWithLevel(_enemy))
 		{
 			_enemy.moveToNextTile = false;
 		}
+		
+		if (FlxG.overlap(_enemy, _player))
+		{
+			
+			if (_enemy.canSeePlayer)
+			{
+				FlxG.resetState();
+			}
+			else
+			{
+				_enemy.kill();
+			}
+			
+		}
+		
+		
 	}
-	
 	
 	private function enemyLogicOnBeat(_enemy:Enemy):Void
 	{
@@ -236,7 +315,7 @@ class PlayState extends FlxState
 			}
 		}
 		
-		_enemy.onBeat(); 
+		_enemy.onBeat(_map.collidableTileLayers[0]); 
 	}
 	
 	private function updateHUD():Void
