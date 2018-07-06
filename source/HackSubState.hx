@@ -35,7 +35,7 @@ class HackSubState extends FlxSubState
 		song = curSong;
 		
 		bar = new FlxSprite(0, 16);
-		bar.makeGraphic(FlxG.width, 5);
+		bar.makeGraphic(FlxG.width, 5, FlxColor.RED);
 		bar.scrollFactor.set();
 		add(bar);
 		
@@ -87,6 +87,12 @@ class HackSubState extends FlxSubState
 			{
 				curOutcome = FAILED;
 			}
+			close();
+		}
+		
+		if (currentNotesHit >= totalNotes)
+		{
+			curOutcome = HACKED;
 			close();
 		}
 		

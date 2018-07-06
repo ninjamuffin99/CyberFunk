@@ -19,6 +19,7 @@ class Player extends CharBase
 	
 	public var justPressedKeys:Bool = false;
 	public var isHacking:Bool = false;
+	public var isDisguised:Bool = false;
 
 	public function new(?X:Float=0, ?Y:Float=0)
 	{
