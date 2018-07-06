@@ -31,6 +31,10 @@ class Enemy extends CharBase
 	
 	public var isBeingHacked:Bool = false;
 	
+	public var moveTimer:Int = 2;
+	public var curMoveTime:Int = 0;
+	
+	
 	public function new(?X:Float=0, ?Y:Float=0, mapPath:FlxPath) 
 	{
 		super(X, Y);
@@ -92,8 +96,12 @@ class Enemy extends CharBase
 			path = patrolPath;
 		}
 		
-		if (path != null && !isBeingHacked)
+		curMoveTime += 1;
+		
+		if (path != null && !isBeingHacked && curMoveTime >= moveTimer)
 		{
+			curMoveTime = 0;
+			
 			if (path == patrolPath)
 			{
 				if (FlxMath.pointInCoordinates(path.nodes[path.nodeIndex + 1].x, path.nodes[path.nodeIndex + 1].y, x, y, width, height))

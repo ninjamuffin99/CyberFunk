@@ -55,7 +55,7 @@ class PlayState extends FlxState
 	public var curLevel:Int = 0;
 	public var levelsArray:Array<String> =
 	[
-		"assets/data/testMap"
+		"assets/data/level2"
 	];
 	
 	public var _grpHackables:FlxTypedGroup<HackableObject>;
@@ -88,7 +88,7 @@ class PlayState extends FlxState
 		persistentUpdate = true;
 		persistentDraw = true;
 		
-		FlxG.camera.follow(_player, FlxCameraFollowStyle.LOCKON, 0.8);
+		FlxG.camera.follow(_player, FlxCameraFollowStyle.SCREEN_BY_SCREEN, 0.2);
 		
 		initHUD();
 		
