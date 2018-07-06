@@ -18,6 +18,7 @@ class Player extends CharBase
 {
 	
 	public var justPressedKeys:Bool = false;
+	public var isHacking:Bool = false;
 
 	public function new(?X:Float=0, ?Y:Float=0)
 	{
@@ -43,24 +44,27 @@ class Player extends CharBase
 	{
 		super.update(elapsed);
 		
-		if (FlxG.keys.anyJustPressed([DOWN, S]))
+		if (!isHacking)
 		{
-			moveTo(FlxObject.DOWN);
+			if (FlxG.keys.anyJustPressed([DOWN, S]))
+			{
+				moveTo(FlxObject.DOWN);
+			}
+			else if (FlxG.keys.anyJustPressed([UP, W]))
+			{
+				moveTo(FlxObject.UP);
+			}
+			else if (FlxG.keys.anyJustPressed([LEFT, A]))
+			{
+				moveTo(FlxObject.LEFT);
+			}
+			else if (FlxG.keys.anyJustPressed([RIGHT, D]))
+			{
+				moveTo(FlxObject.RIGHT);
+			}
+			else
+				justPressedKeys = false;
 		}
-		else if (FlxG.keys.anyJustPressed([UP, W]))
-		{
-			moveTo(FlxObject.UP);
-		}
-		else if (FlxG.keys.anyJustPressed([LEFT, A]))
-		{
-			moveTo(FlxObject.LEFT);
-		}
-		else if (FlxG.keys.anyJustPressed([RIGHT, D]))
-		{
-			moveTo(FlxObject.RIGHT);
-		}
-		else
-			justPressedKeys = false;
 	}
 
 	override public function moveTo(Direction:Int, angleDir:Float = 0):Void 

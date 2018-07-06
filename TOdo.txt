@@ -32,3 +32,10 @@ you have to keep moving or you get spotted
 but how do i make it so that when you move around, it doesnt seem so repetetive?
 maybe it forces you to go in different tiles? Like you leave a trail?
 
+get minimap shit going
+
+get a "hackable object" base class going
+
+make it so you can hack into enemies and use them as disguises
+
+the hacking minigame could either be DDR based, or just spam Space, but that'll make more noise and shit

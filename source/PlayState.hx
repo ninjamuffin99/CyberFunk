@@ -39,6 +39,8 @@ class PlayState extends FlxState
 	// Hud shit
 	private var _grpHUD:FlxTypedGroup<FlxSprite>;
 	
+	private var _miniMap:Minimap;
+	
 	private var _barBeats:FlxSprite;
 	private var _barBeatsKeys:FlxSprite;
 	
@@ -53,8 +55,13 @@ class PlayState extends FlxState
 	public var curLevel:Int = 0;
 	public var levelsArray:Array<String> =
 	[
-		"assets/data/testMap.tmx"
+		"assets/data/testMap"
 	];
+	
+	public var _grpHackables:FlxTypedGroup<HackableObject>;
+	
+	public var hackBox:HackableObject;
+	private var infoBox:DescriptionBox;
 	
 	override public function create():Void
 	{
@@ -67,11 +74,14 @@ class PlayState extends FlxState
 		add(bg);
 		
 		_grpEnemies = new FlxTypedGroup<Enemy>();
+		_grpHackables = new FlxTypedGroup<HackableObject>();
 		
 		initMap();
 		
 		_player = new Player(player_start.x, player_start.y);
 		add(_player);
+		
+		add(_grpHackables);
 		
 		add(_grpEnemies);
 		
@@ -87,7 +97,7 @@ class PlayState extends FlxState
 	
 	private function initMap():Void
 	{
-		_map = new TiledLevel(levelsArray[curLevel], this);
+		_map = new TiledLevel(levelsArray[curLevel] + ".tmx", this);
 		add(_map.backgroundLayer);
 		add(_map.imagesLayer);
 		add(_map.BGObjects);
@@ -110,6 +120,13 @@ class PlayState extends FlxState
 		_txtPlayerHP = new FlxText(10, 10, 0, "2/2", 12);
 		_grpHUD.add(_txtPlayerHP);
 		
+		_miniMap = new Minimap(FlxG.width * -0.3, FlxG.height * -0.3, _map);
+		_grpHUD.add(_miniMap);
+		
+		infoBox = new DescriptionBox(0, 0, "", "this is a test lmaooooo");
+		infoBox.visible = false;
+		add(infoBox);
+		
 		// sets each member in the group to not scroll
 		_grpHUD.forEach(function(s:FlxSprite)
 		{
@@ -130,7 +147,7 @@ class PlayState extends FlxState
 		
 		_grpEnemies.forEachExists(function(e:Enemy){_grpEnemies.remove(e); });
 		
-		_map = new TiledLevel(levelsArray[curLevel], this);
+		_map = new TiledLevel(levelsArray[curLevel] + ".tmx", this);
 		
 		_player.setPosition(player_start.x, player_start.y);
 		
@@ -166,7 +183,69 @@ class PlayState extends FlxState
 
 	override public function update(elapsed:Float):Void
 	{
+		// text/info box
+		var hackObjsNear:Int = 0;
+		for (h in _grpHackables.members)
+		{
+			if (FlxMath.isDistanceWithin(_player, h, 150) && h.alive)
+			{
+				hackObjsNear += 1;
+				if (FlxG.keys.justPressed.SPACE && !_player.isHacking)
+				{
+					openSubState(new HackSubState(_song));
+					_player.isHacking = true;
+				}
+				
+				if (_player.isHacking && HackSubState.curOutcome != HackSubState.Outcome.NONE)
+				{
+					if (HackSubState.curOutcome == HackSubState.Outcome.HACKED)
+					{
+						h.hacked();
+					}
+					
+					_player.isHacking = false;
+					HackSubState.curOutcome = HackSubState.Outcome.NONE;
+				}
+			}
+		}
 		
+		for (e in _grpEnemies.members)
+		{
+			if (FlxMath.isDistanceWithin(_player, e, 150) && e.alive)
+			{
+				hackObjsNear += 1;
+				if (FlxG.keys.justPressed.SPACE && !_player.isHacking && !e.canSeePlayer)
+				{
+					openSubState(new HackSubState(_song));
+					_player.isHacking = true;
+					e.isBeingHacked = true;
+				}
+				
+				if (_player.isHacking && HackSubState.curOutcome != HackSubState.Outcome.NONE)
+				{
+					if (HackSubState.curOutcome == HackSubState.Outcome.HACKED)
+					{
+						e.hacked();
+					}
+					else
+					{
+						e.isBeingHacked = false;
+					}
+					_player.isHacking = false;
+					HackSubState.curOutcome = HackSubState.Outcome.NONE;
+				}
+			}
+		}
+		
+		if (hackObjsNear > 0)
+		{
+			infoBox.visible = true;
+			infoBox.setPosition(_player.x + 80, _player.y - 100);
+		}
+		else
+			infoBox.visible = false;
+		
+			
 		if (FlxG.overlap(levelExit, _player))
 		{
 			reloadMap();
@@ -194,12 +273,6 @@ class PlayState extends FlxState
 			noiseDiff = 0;
 		}
 		
-		
-		if (FlxG.keys.justPressed.R)
-		{
-			openSubState(new HackSubState(_song));
-		}
-		
 		super.update(elapsed);
 		
 		if (_map.collideWithLevel(_player))
@@ -209,6 +282,10 @@ class PlayState extends FlxState
 		
 		_grpEnemies.forEachAlive(enemyLogic);
 		
+		if (FlxG.collide(_player, _grpHackables))
+		{
+			_player.moveToNextTile = false;
+		}
 		
 		if (_player.justPressedKeys)
 		{
@@ -286,14 +363,7 @@ class PlayState extends FlxState
 			{
 				FlxG.resetState();
 			}
-			else
-			{
-				_enemy.kill();
-			}
-			
 		}
-		
-		
 	}
 	
 	private function enemyLogicOnBeat(_enemy:Enemy):Void

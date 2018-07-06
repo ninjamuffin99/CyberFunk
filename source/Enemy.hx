@@ -29,6 +29,8 @@ class Enemy extends CharBase
 	
 	private var patrolPath:FlxPath;
 	
+	public var isBeingHacked:Bool = false;
+	
 	public function new(?X:Float=0, ?Y:Float=0, mapPath:FlxPath) 
 	{
 		super(X, Y);
@@ -58,7 +60,11 @@ class Enemy extends CharBase
 	{
 		super.update(elapsed);
 		
-		alertChecks();
+		if (!isBeingHacked)
+		{
+			alertChecks();
+		}
+		
 		
 		switch(facing)
 		{
@@ -86,7 +92,7 @@ class Enemy extends CharBase
 			path = patrolPath;
 		}
 		
-		if (path != null)
+		if (path != null && !isBeingHacked)
 		{
 			if (path == patrolPath)
 			{
@@ -112,8 +118,10 @@ class Enemy extends CharBase
 		}
 		else if (FlxG.random.bool())
 		{
+			/*
 			facing = FlxG.random.getObject([FlxObject.LEFT, FlxObject.RIGHT, FlxObject.UP, FlxObject.DOWN]);
 			moveTo(facing);
+			*/
 		}
 	}
 	
@@ -153,5 +161,10 @@ class Enemy extends CharBase
 			alerted = false;
 		}
 		
+	}
+	
+	public function hacked():Void
+	{
+		kill();
 	}
 }

@@ -5,6 +5,7 @@ import flixel.FlxSprite;
 import flixel.FlxSubState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.system.FlxSound;
+import flixel.text.FlxText;
 import flixel.util.FlxColor;
 
 /**
@@ -15,14 +16,21 @@ class HackSubState extends FlxSubState
 {
 	
 	private var song:FlxSound;
-	
 	private var bar:FlxSprite;
+	private var bruteBar:FlxSprite;
 	private var grpNotes:FlxTypedGroup<HackNote>;
+	
+	private var currentNotesHit:Int = 0;
+	private var totalNotes:Int = 0;
+	private var currentLiveNotes:Int = 0;
+	
+	private var txtNoteCounter:FlxText;
+	
+	public static var curOutcome:Outcome = NONE;
 
 	public function new(curSong:FlxSound, BGColor:FlxColor=FlxColor.TRANSPARENT) 
 	{
 		super(BGColor);
-		
 		
 		song = curSong;
 		
@@ -31,11 +39,19 @@ class HackSubState extends FlxSubState
 		bar.scrollFactor.set();
 		add(bar);
 		
+		bruteBar = new FlxSprite(bar.x, bar.y).makeGraphic(Std.int(bar.width), Std.int(bar.height), FlxColor.GREEN);
+		bruteBar.scrollFactor.set();
+		bruteBar.scale.x = 0;
+		add(bruteBar);
+		
+		
 		grpNotes = new FlxTypedGroup<HackNote>();
 		add(grpNotes);
 		
-		for (i in 0...FlxG.random.int(4, 10))
+		for (i in 1...FlxG.random.int(9, 15))
 		{
+			totalNotes += 1;
+			
 			var newNote:HackNote;
 			newNote = new HackNote(0, FlxG.height);
 			newNote.notePos = FlxG.random.int(0, 3);
@@ -44,15 +60,51 @@ class HackSubState extends FlxSubState
 			newNote.scrollFactor.set();
 			grpNotes.add(newNote);
 		}
+		
+		totalNotes = Math.floor(totalNotes * 0.75);
+		
+		txtNoteCounter = new FlxText(0, 0, 0, "", 64);
+		txtNoteCounter.color = FlxColor.MAGENTA;
+		txtNoteCounter.scrollFactor.set();
+		add(txtNoteCounter);
+		
 	}
 	
 	override public function update(elapsed:Float):Void 
 	{
+		txtNoteCounter.text = currentNotesHit + "/" + totalNotes;
+		
+		currentLiveNotes = 0;
 		grpNotes.forEachAlive(noteFall);
 		
-		if (FlxG.keys.justPressed.T)
+		if (currentLiveNotes == 0)
 		{
+			if (currentNotesHit >= totalNotes)
+			{
+				curOutcome = HACKED;
+			}
+			else
+			{
+				curOutcome = FAILED;
+			}
 			close();
+		}
+		
+		if (bruteBar.scale.x >= 1)
+		{
+			bruteBar.scale.x = 1;
+			curOutcome = HACKED;
+			close();
+		}
+		
+		if (FlxG.keys.justPressed.SPACE)
+		{
+			bruteBar.scale.x += FlxG.random.float(0.1, 0.4);
+		}
+		
+		if (bruteBar.scale.x > 0)
+		{
+			bruteBar.scale.x -= FlxG.elapsed * 0.2;
 		}
 		
 		super.update(elapsed);
@@ -60,7 +112,9 @@ class HackSubState extends FlxSubState
 	
 	private function noteFall(note:HackNote):Void
 	{
-		note.y = bar.y - ((Conductor.songPosition - note.strumTime) * 0.3);
+		currentLiveNotes += 1;
+		
+		note.y = bar.y - ((Conductor.songPosition - note.strumTime) * 0.4);
 		
 		if (note.y < 0 - note.height)
 			note.kill();
@@ -68,17 +122,44 @@ class HackSubState extends FlxSubState
 		if (FlxG.overlap(note, bar))
 		{
 			if (FlxG.keys.justPressed.ONE && note.notePos == 0)
-				note.kill();
+			{
+				
+				hitNote(note);
+			}
 				
 			if (FlxG.keys.justPressed.TWO && note.notePos == 1)
-				note.kill();
+			{
+				
+				hitNote(note);
+			}
 				
 			if (FlxG.keys.justPressed.THREE && note.notePos == 2)
-				note.kill();
+			{
+				
+				hitNote(note);
+			}
 				
 			if (FlxG.keys.justPressed.FOUR && note.notePos == 3)
-				note.kill();
+			{
+				
+				hitNote(note);
+			}
 		}
 	}
 	
+	private function hitNote(n:HackNote):Void
+	{
+		n.kill();
+		currentNotesHit += 1;
+	}
+	
+	
+}
+
+enum Outcome
+{
+	NONE;
+	HACKED;
+	FAILED;//COMPLETION
+	DEFEAT;//SUBMISSION
 }

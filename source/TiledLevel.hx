@@ -31,7 +31,7 @@ class TiledLevel extends TiledMap
 	private inline static var c_PATH_LEVEL_TILESHEETS = "assets/data/";
 	
 	// Array of tilemaps used for collision
-	public var foregroundTiles:FlxGroup;
+	public var foregroundTiles:FlxTypedGroup<FlxTilemap>;
 	public var foregroundObjects:FlxGroup;
 	public var BGObjects:FlxGroup;
 	public var objectsLayer:FlxGroup;
@@ -50,7 +50,7 @@ class TiledLevel extends TiledMap
 		//FlxG.log.add("CheckPoint1");
 		
 		imagesLayer = new FlxGroup();
-		foregroundTiles = new FlxGroup();
+		foregroundTiles = new FlxTypedGroup<FlxTilemap>();
 		foregroundObjects = new FlxGroup();
 		BGObjects = new FlxGroup();
 		objectsLayer = new FlxGroup();
@@ -242,6 +242,9 @@ class TiledLevel extends TiledMap
 			case "player_exit":
 				state.levelExit = new FlxObject(x, y, o.width, o.height);
 				state.add(state.levelExit);
+			case "hackable":
+				var hackable:HackableObject = new HackableObject(x, y, o.name);
+				state._grpHackables.add(hackable);
 			/*	
 			case "textidk":
 				var text = new FlxText(x, y, o.width, o.name, 16);
