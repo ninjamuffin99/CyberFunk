@@ -16,6 +16,7 @@ import flixel.text.FlxText;
 import flixel.tile.FlxBaseTilemap.FlxTilemapDiagonalPolicy;
 import flixel.util.FlxColor;
 import flixel.util.FlxPath;
+using flixel.util.FlxSpriteUtil;
 
 class PlayState extends FlxState
 {
@@ -75,9 +76,17 @@ class PlayState extends FlxState
 		
 		_grpEnemies = new FlxTypedGroup<Enemy>();
 		_grpHackables = new FlxTypedGroup<HackableObject>();
+				
+		_barBeats = new FlxSprite(30, 75).loadGraphic(AssetPaths.circlePNG__png);
+		_barBeats.color = FlxColor.RED;
+		add(_barBeats);
+		
+		_barBeatsKeys = new FlxSprite(42, 75).loadGraphic(AssetPaths.circlePNG__png);
+		_barBeatsKeys.color = FlxColor.BLUE;
+		add(_barBeatsKeys);
 		
 		initMap();
-		
+
 		_player = new Player(player_start.x, player_start.y);
 		add(_player);
 		
@@ -88,7 +97,10 @@ class PlayState extends FlxState
 		persistentUpdate = true;
 		persistentDraw = true;
 		
+		FlxG.camera.focusOn(_player.getPosition());
 		FlxG.camera.follow(_player, FlxCameraFollowStyle.SCREEN_BY_SCREEN, 0.2);
+		var followLead:Float = 0.45;
+		FlxG.camera.followLead.set(followLead, followLead);
 		
 		initHUD();
 		
@@ -110,18 +122,12 @@ class PlayState extends FlxState
 	{
 		_grpHUD = new FlxTypedGroup<FlxSprite>();
 		add(_grpHUD);
-		
-		_barBeats = new FlxSprite(30, 75).makeGraphic(8, 55, FlxColor.BLUE);
-		_grpHUD.add(_barBeats);
-		
-		_barBeatsKeys = new FlxSprite(42, 75).makeGraphic(8, 55, FlxColor.BLUE);
-		_grpHUD.add(_barBeatsKeys);
-		
+
 		_txtPlayerHP = new FlxText(10, 10, 0, "2/2", 12);
 		_grpHUD.add(_txtPlayerHP);
 		
 		_miniMap = new Minimap(FlxG.width * -0.3, FlxG.height * -0.3, _map);
-		_grpHUD.add(_miniMap);
+		// _grpHUD.add(_miniMap);
 		
 		infoBox = new DescriptionBox(0, 0, "", "this is a test lmaooooo");
 		infoBox.visible = false;
@@ -341,14 +347,26 @@ class PlayState extends FlxState
 			var minView:Float = FlxMath.bound(_enemy.angleFacing - angleView, -179.9, 180);
 			var maxView:Float = FlxMath.bound(_enemy.angleFacing + angleView, -179.9, 180);
 			
-			if (degs >= minView && degs <= _enemy.angleFacing + maxView)
+			switch(_enemy.botType)
 			{
-				_enemy.canSeePlayer = true;
+				case Enemy.PATROL:
+					if (degs >= minView && degs <= _enemy.angleFacing + maxView)
+					{
+						_enemy.canSeePlayer = true;
+					}
+					else
+					{
+						_enemy.canSeePlayer = false;
+					}
+				case Enemy.EYE:
+					_enemy.canSeePlayer = true;
+				case Enemy.DOG:
+					_enemy.canSeePlayer = false;
 			}
-			else
-			{
-				_enemy.canSeePlayer = false;
-			}
+		}
+		else
+		{
+			_enemy.canSeePlayer = false;
 		}
 		
 		if (_map.collideWithLevel(_enemy))
@@ -392,8 +410,15 @@ class PlayState extends FlxState
 	{
 		_txtPlayerHP.text = _player.hp + "/" + _player.hpMax;
 		
-		_barBeats.scale.y = _beatNoise;
-		_barBeatsKeys.scale.y = _playerNoise;
+		_barBeats.setPosition(_player.getGraphicMidpoint().x - (_barBeats.width / 2), _player.getGraphicMidpoint().y - (_barBeats.height / 2));
+		_barBeatsKeys.setPosition(_barBeats.x, _barBeats.y);
+		
+		_barBeats.scale.set(_beatNoise, _beatNoise);
+		_barBeatsKeys.scale.set(_playerNoise, _playerNoise);
+		
+		_barBeats.alpha = _beatNoise;
+		_barBeatsKeys.alpha = _playerNoise;
+		
 	}
 	
 	private function isNoisy(noiseAmount:Float):Bool

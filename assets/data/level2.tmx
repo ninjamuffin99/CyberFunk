@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.1.4" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="128" tileheight="128" infinite="0" nextobjectid="22">
+<map version="1.0" tiledversion="1.1.4" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="128" tileheight="128" infinite="0" nextobjectid="42">
  <tileset firstgid="1" name="testTiles" tilewidth="128" tileheight="128" tilecount="2" columns="2">
   <image source="testTiles.png" width="256" height="128"/>
  </tileset>
@@ -28,6 +28,35 @@
   <object id="20" name="pete" type="enemy" x="2944" y="1344" width="128" height="128"/>
   <object id="21" name="pete" x="3008" y="1408">
    <polyline points="0,0 0,-704 -1408,-704 -1408,576 0,576"/>
+  </object>
+  <object id="22" name="coolidiot" type="enemy" x="640" y="3584" width="128" height="128"/>
+  <object id="23" name="coolidiot" x="704" y="3648">
+   <polyline points="0,0 1408,0 1408,1408 -384,1408 -384,0"/>
+  </object>
+  <object id="24" name="weeniebitch" type="enemy" x="640" y="4608" width="128" height="128">
+   <properties>
+    <property name="type" value=""/>
+   </properties>
+  </object>
+  <object id="25" name="weeniebitch" x="704" y="4672">
+   <polyline points="0,0 -384,0 -384,-768 1408,-768 1408,64"/>
+  </object>
+  <object id="28" name="dangdog" type="enemydog" x="3584" y="1024" width="128" height="128"/>
+  <object id="30" name="dangdog" x="3648" y="1088">
+   <polyline points="0,0 0,-512 2176,-512 2176,768 1024,768 1024,320 0,320"/>
+  </object>
+  <object id="31" name="loldumbass" type="enemy" x="3584" y="2304" width="128" height="128"/>
+  <object id="32" name="loldumbass" x="3648" y="2368">
+   <polyline points="0,0 0,-512 1152,-512 1152,896 0,896"/>
+  </object>
+  <object id="33" name="eye" type="enemyeye" x="4224" y="2432" width="128" height="128"/>
+  <object id="34" name="notsogrump" type="enemy" x="256" y="2432" width="128" height="128"/>
+  <object id="37" name="notsogrump" x="320" y="2496">
+   <polyline points="0,0 640,0 640,-896 0,-896 0,-2048 640,-2048 640,-896 0,-896"/>
+  </object>
+  <object id="38" name="notsogrump2" type="enemy" x="896" y="384" width="128" height="128"/>
+  <object id="41" name="notsogrump2" x="960" y="448">
+   <polyline points="0,0 -640,0 -640,1280 0,1280 0,2048 -640,2048 -640,1280 0,1280"/>
   </object>
  </objectgroup>
 </map>

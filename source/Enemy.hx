@@ -9,6 +9,8 @@ import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.tile.FlxTilemap;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxPath;
 
@@ -34,10 +36,17 @@ class Enemy extends CharBase
 	public var moveTimer:Int = 2;
 	public var curMoveTime:Int = 0;
 	
+	public var botType:String = "";
 	
-	public function new(?X:Float=0, ?Y:Float=0, mapPath:FlxPath) 
+	public static inline var PATROL:String = "patrol";
+	public static inline var DOG:String = "dog";
+	public static inline var EYE:String = "eye";
+	
+	public function new(?X:Float=0, ?Y:Float=0, mapPath:FlxPath, botType:String = "patrol") 
 	{
 		super(X, Y);
+	
+		this.botType = botType;
 		
 		patrolPath = mapPath;
 		
@@ -53,6 +62,16 @@ class Enemy extends CharBase
 		height = 128;
 		offset.x = 178;
 		offset.y = 30;
+		
+		
+		switch(this.botType)
+		{
+			case PATROL:
+				FlxTween.tween(this.offset, {y: 10}, Conductor.crochet * 0.001 / 2, {ease:FlxEase.quadInOut, type:FlxTween.PINGPONG});
+			case DOG:
+				moveTimer = 1;
+		}
+		
 		
 		animation.add("lr", [0]);
 		animation.add("d", [1]);
@@ -123,13 +142,6 @@ class Enemy extends CharBase
 				case 180:
 					moveTo(FlxObject.LEFT, pathAngle);
 			}
-		}
-		else if (FlxG.random.bool())
-		{
-			/*
-			facing = FlxG.random.getObject([FlxObject.LEFT, FlxObject.RIGHT, FlxObject.UP, FlxObject.DOWN]);
-			moveTo(facing);
-			*/
 		}
 	}
 	

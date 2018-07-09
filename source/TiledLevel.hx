@@ -233,6 +233,16 @@ class TiledLevel extends TiledMap
 				var enemy = new Enemy(x, y, p);
 				
 				state._grpEnemies.add(enemy);
+			case "enemydog":
+				var p:FlxPath = getPathData(o);
+				var enemy = new Enemy(x, y, p, Enemy.DOG);
+				
+				state._grpEnemies.add(enemy);
+			case "enemyeye":
+				var p:FlxPath = getPathData(o);
+				var enemy = new Enemy(x, y, p, Enemy.EYE);
+				
+				state._grpEnemies.add(enemy);
 			case "player_start":
 				
 				state.player_start = new FlxObject(x, y, 1, 1);

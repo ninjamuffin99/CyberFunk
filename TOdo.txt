@@ -1,9 +1,3 @@
-MAIN DEISNG DEICISION:
-	IF YOU WANT TO BE MORE STEALTHY YOU NEED TO STAY ON BEAT ALWAYS
-
-get different levels going, so you have a goal for testing
-
-
 maybe get the hacking segments going?
 
 main menu shit
@@ -13,11 +7,8 @@ different music?
 better interaction between the robots and player
 dialogue and story shit
 tutorial shit
-get it so that enemies follow paths
 make it so that if they go off path, they return to their routine and shit
 
-some sort of interaction between player and enemy
-	sneak up behind them to hack
 
 some doors need specific keys that you steal from enemies
 
@@ -34,8 +25,5 @@ maybe it forces you to go in different tiles? Like you leave a trail?
 
 get minimap shit going
 
-get a "hackable object" base class going
-
 make it so you can hack into enemies and use them as disguises
 
-the hacking minigame could either be DDR based, or just spam Space, but that'll make more noise and shit
