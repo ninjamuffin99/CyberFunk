@@ -32,6 +32,7 @@ class Enemy extends CharBase
 	private var patrolPath:FlxPath;
 	
 	public var isBeingHacked:Bool = false;
+	public var isDisguise:Bool = false;
 	
 	public var moveTimer:Int = 2;
 	public var curMoveTime:Int = 0;

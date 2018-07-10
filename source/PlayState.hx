@@ -337,7 +337,7 @@ class PlayState extends FlxState
 		}
 		
 		// vision logic simple
-		if (_map.collidableTileLayers[0].ray(_enemy.getMidpoint(), _player.getMidpoint()) && FlxMath.isDistanceWithin(_player, _enemy, _player.width * 5.1))
+		if (_map.collidableTileLayers[0].ray(_enemy.getMidpoint(), _player.getMidpoint()) && FlxMath.isDistanceWithin(_player, _enemy, _player.width * 5.1) && !_player.isDisguised)
 		{
 			var rads:Float = Math.atan2(_player.getMidpoint().y - _enemy.getMidpoint().y, _player.getMidpoint().x - _enemy.getMidpoint().x);
 			var degs = FlxAngle.asDegrees(rads);
