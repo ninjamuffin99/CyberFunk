@@ -46,6 +46,7 @@ class HackSubState extends FlxSubState
 		hackPhone = new FlxSprite(-150, FlxG.height / FlxG.camera.zoom).loadGraphic(AssetPaths.hacking__png);
 		hackPhone.setGraphicSize(Std.int(hackPhone.width * 1.44));
 		hackPhone.updateHitbox();
+		hackPhone.alpha = 0.7;
 		hackPhone.scrollFactor.set();
 		FlxTween.tween(hackPhone, {y: -120}, 0.2, {ease:FlxEase.quartOut});
 		add(hackPhone);
