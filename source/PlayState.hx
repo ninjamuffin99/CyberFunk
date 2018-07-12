@@ -56,7 +56,11 @@ class PlayState extends FlxState
 	public var curLevel:Int = 0;
 	public var levelsArray:Array<String> =
 	[
-		"assets/data/level2"
+		"assets/data/level2",
+		"assets/data/level3",
+		"assets/data/level4",
+		"assets/data/level5",
+		"assets/data/level6"
 	];
 	
 	public var _grpHackables:FlxTypedGroup<HackableObject>;
@@ -151,7 +155,9 @@ class PlayState extends FlxState
 		
 		remove(_grpHUD);
 		
-		_grpEnemies.forEachExists(function(e:Enemy){_grpEnemies.remove(e); });
+		curLevel += 1;
+		
+		_grpEnemies.forEachExists(function(e:Enemy){e.kill(); });
 		
 		_map = new TiledLevel(levelsArray[curLevel] + ".tmx", this);
 		
