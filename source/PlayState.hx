@@ -14,14 +14,18 @@ import flixel.math.FlxPoint;
 import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.tile.FlxBaseTilemap.FlxTilemapDiagonalPolicy;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxPath;
+import flixel.util.FlxTimer;
 using flixel.util.FlxSpriteUtil;
 
 class PlayState extends FlxState
 {
 	private var _player:Player;
 	public var player_start:FlxObject;
+	private var initCamPos:FlxObject;
 	public var levelExit:FlxObject;
 	private var bg:FlxSprite;
 	
@@ -80,7 +84,9 @@ class PlayState extends FlxState
 		
 		_grpEnemies = new FlxTypedGroup<Enemy>();
 		_grpHackables = new FlxTypedGroup<HackableObject>();
-				
+		
+		initMap();
+		
 		_barBeats = new FlxSprite(30, 75).loadGraphic(AssetPaths.circlePNG__png);
 		_barBeats.color = FlxColor.RED;
 		add(_barBeats);
@@ -89,7 +95,6 @@ class PlayState extends FlxState
 		_barBeatsKeys.color = FlxColor.BLUE;
 		add(_barBeatsKeys);
 		
-		initMap();
 
 		_player = new Player(player_start.x, player_start.y);
 		add(_player);
@@ -101,12 +106,17 @@ class PlayState extends FlxState
 		persistentUpdate = true;
 		persistentDraw = true;
 		
-		FlxG.camera.focusOn(_player.getPosition());
-		FlxG.camera.follow(_player, FlxCameraFollowStyle.SCREEN_BY_SCREEN, 0.2);
+		initCamPos = new FlxObject(levelExit.getMidpoint().x, levelExit.getMidpoint().y, 1, 1);
+		add(initCamPos);
+		
+		FlxG.camera.focusOn(initCamPos.getPosition());
+		FlxG.camera.follow(initCamPos, FlxCameraFollowStyle.LOCKON, 0.3);
+		// FlxG.camera.follow(_player, FlxCameraFollowStyle.SCREEN_BY_SCREEN, 0.2);
 		var followLead:Float = 0.45;
 		FlxG.camera.followLead.set(followLead, followLead);
 		
 		initHUD();
+		
 		
 		super.create();
 	}
@@ -120,6 +130,14 @@ class PlayState extends FlxState
 		add(_map.foregroundObjects);
 		add(_map.objectsLayer);
 		add(_map.foregroundTiles);
+		
+		new FlxTimer().start(0.5, function(t:FlxTimer)
+		{
+			FlxTween.tween(initCamPos, {x: _player.x, y: _player.y}, 0.9, {ease:FlxEase.quadInOut, onComplete:function(twen:FlxTween)
+			{
+				FlxG.camera.follow(_player, FlxCameraFollowStyle.SCREEN_BY_SCREEN, 0.2);
+			}});
+		});
 	}
 	
 	private function initHUD():Void
@@ -173,6 +191,19 @@ class PlayState extends FlxState
 		add(_map.foregroundTiles);
 		
 		add(_grpHUD);
+		
+		initCamPos.setPosition(levelExit.getMidpoint().x, levelExit.getMidpoint().y);
+		
+		FlxG.camera.focusOn(initCamPos.getPosition());
+		FlxG.camera.follow(initCamPos, FlxCameraFollowStyle.LOCKON, 0.3);
+		
+		new FlxTimer().start(0.2, function(t:FlxTimer)
+		{
+			FlxTween.tween(initCamPos, {x: _player.x, y: _player.y}, 0.8, {ease:FlxEase.quadInOut, onComplete:function(twen:FlxTween)
+			{
+				FlxG.camera.follow(_player, FlxCameraFollowStyle.SCREEN_BY_SCREEN, 0.2);
+			}});
+		});
 	}
 	
 	
@@ -343,7 +374,7 @@ class PlayState extends FlxState
 		}
 		
 		// vision logic simple
-		if (_map.collidableTileLayers[0].ray(_enemy.getMidpoint(), _player.getMidpoint()) && FlxMath.isDistanceWithin(_player, _enemy, _player.width * 5.1) && !_player.isDisguised)
+		if (_map.collidableTileLayers[0].ray(_enemy.getMidpoint(), _player.getMidpoint()) && FlxMath.isDistanceWithin(_player, _enemy, _player.width * 9) && !_player.isDisguised)
 		{
 			var rads:Float = Math.atan2(_player.getMidpoint().y - _enemy.getMidpoint().y, _player.getMidpoint().x - _enemy.getMidpoint().x);
 			var degs = FlxAngle.asDegrees(rads);

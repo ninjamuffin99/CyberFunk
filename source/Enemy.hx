@@ -22,7 +22,7 @@ class Enemy extends CharBase
 {
 	
 	public var alertness:Float = 0;
-	private var maxAlertLevel:Float = 5;
+	private var maxAlertLevel:Float = 7;
 	
 	public var alertLevel:Float = 0;
 	public var alerted:Bool = false;
@@ -88,7 +88,6 @@ class Enemy extends CharBase
 		{
 			alertChecks();
 		}
-		
 		
 		switch(facing)
 		{
