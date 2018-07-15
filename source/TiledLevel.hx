@@ -33,6 +33,7 @@ class TiledLevel extends TiledMap
 	// Array of tilemaps used for collision
 	public var foregroundTiles:FlxTypedGroup<FlxTilemap>;
 	public var foregroundObjects:FlxGroup;
+	public var collisionTiles:FlxTypedGroup<FlxTilemap>;
 	public var BGObjects:FlxGroup;
 	public var objectsLayer:FlxGroup;
 	public var backgroundLayer:FlxGroup;
@@ -52,6 +53,8 @@ class TiledLevel extends TiledMap
 		imagesLayer = new FlxGroup();
 		foregroundTiles = new FlxTypedGroup<FlxTilemap>();
 		foregroundObjects = new FlxGroup();
+		collisionTiles = new FlxTypedGroup<FlxTilemap>();
+		collisionTiles.visible = false;
 		BGObjects = new FlxGroup();
 		objectsLayer = new FlxGroup();
 		backgroundLayer = new FlxGroup();
@@ -120,6 +123,13 @@ class TiledLevel extends TiledMap
 			if (tileLayer.properties.contains("nocollide"))
 			{
 				backgroundLayer.add(tilemap);
+			}
+			else if (tileLayer.properties.contains("collision"))
+			{
+				if (collidableTileLayers == null)
+					collidableTileLayers = new Array<FlxTilemap>();
+				collisionTiles.add(tilemap);
+				collidableTileLayers.push(tilemap);
 			}
 			else
 			{
@@ -255,15 +265,14 @@ class TiledLevel extends TiledMap
 			case "hackable":
 				var hackable:HackableObject = new HackableObject(x, y, o.name);
 				state._grpHackables.add(hackable);
+			case "oob":
+				var oob = new FlxObject(x, y, o.width, o.height);
+				state._grpOOB.add(oob);
 			/*	
 			case "textidk":
 				var text = new FlxText(x, y, o.width, o.name, 16);
 				
 				state.add(text);
-				
-			case "oob":
-				var oob = new FlxObject(x, y, o.width, o.height);
-				state._grpOOB.add(oob);
 				
 			case "pickup":
 				var pickup = new PickupSpot(x, y, o.properties.get("itemType"));

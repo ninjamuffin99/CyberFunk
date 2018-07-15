@@ -7,6 +7,7 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.addons.display.FlxStarField.FlxStarField3D;
+import flixel.group.FlxGroup;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxAngle;
 import flixel.math.FlxMath;
@@ -30,6 +31,7 @@ class PlayState extends FlxState
 	private var bg:FlxSprite;
 	
 	public var _grpEnemies:FlxTypedGroup<Enemy>;
+	public var _grpOOB:FlxGroup;
 	
 	private var _song:FlxSound;
 	private var lastBeat:Float;
@@ -76,6 +78,8 @@ class PlayState extends FlxState
 	{
 		FlxG.camera.zoom = 0.6;
 		
+		_grpOOB = new FlxGroup();
+		
 		songInit();
 		
 		bg = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0xff501111);
@@ -96,9 +100,6 @@ class PlayState extends FlxState
 		add(_barBeatsKeys);
 		
 
-		_player = new Player(player_start.x, player_start.y);
-		add(_player);
-		
 		add(_grpHackables);
 		
 		add(_grpEnemies);
@@ -129,7 +130,14 @@ class PlayState extends FlxState
 		add(_map.BGObjects);
 		add(_map.foregroundObjects);
 		add(_map.objectsLayer);
+		add(_map.collisionTiles);
+		
+		_player = new Player(player_start.x, player_start.y);
+		add(_player);
+		
 		add(_map.foregroundTiles);
+		
+		add(_grpOOB);
 		
 		new FlxTimer().start(0.5, function(t:FlxTimer)
 		{
@@ -170,6 +178,7 @@ class PlayState extends FlxState
 		remove(_map.foregroundObjects);
 		remove(_map.objectsLayer);
 		remove(_map.foregroundTiles);
+		remove(_map.collisionTiles);
 		
 		remove(_grpHUD);
 		
@@ -189,6 +198,7 @@ class PlayState extends FlxState
 		add(_map.objectsLayer);
 		
 		add(_map.foregroundTiles);
+		add(_map.collisionTiles);
 		
 		add(_grpHUD);
 		
@@ -318,14 +328,21 @@ class PlayState extends FlxState
 		
 		super.update(elapsed);
 		
-		if (_map.collideWithLevel(_player))
+		if (FlxG.collide(_player, _grpOOB))
 		{
 			_player.moveToNextTile = false;
 		}
 		
+		/* Uses the _grpOOB for collisions instead
+		if (_map.collideWithLevel(_player))
+		{
+			_player.moveToNextTile = false;
+		}
+		*/
+		
 		_grpEnemies.forEachAlive(enemyLogic);
 		
-		if (FlxG.collide(_player, _grpHackables))
+		if (FlxG.collide(_player, _map.collisionTiles))
 		{
 			_player.moveToNextTile = false;
 		}

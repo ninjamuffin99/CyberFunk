@@ -9,21 +9,9 @@ dialogue and story shit
 tutorial shit
 make it so that if they go off path, they return to their routine and shit
 
-
-some doors need specific keys that you steal from enemies
-
 stuff like doors you need to pick lock open and the faster you do it, the more noise you make
 
-you start in darkness
-
 some sort of alert status similar to Metal Gear Solid
-
-you have to keep moving or you get spotted
-
-but how do i make it so that when you move around, it doesnt seem so repetetive?
-maybe it forces you to go in different tiles? Like you leave a trail?
-
-get minimap shit going
 
 make it so you can hack into enemies and use them as disguises
 
