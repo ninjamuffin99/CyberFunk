@@ -77,6 +77,9 @@ class PlayState extends FlxState
 	override public function create():Void
 	{
 		FlxG.camera.zoom = 0.6;
+		FlxG.camera.bgColor = FlxColor.BLACK;
+		
+		FlxG.camera.fade(FlxColor.BLACK, 0.7, true);
 		
 		_grpOOB = new FlxGroup();
 		
@@ -90,15 +93,7 @@ class PlayState extends FlxState
 		_grpHackables = new FlxTypedGroup<HackableObject>();
 		
 		initMap();
-		
-		_barBeats = new FlxSprite(30, 75).loadGraphic(AssetPaths.circlePNG__png);
-		_barBeats.color = FlxColor.RED;
-		add(_barBeats);
-		
-		_barBeatsKeys = new FlxSprite(42, 75).loadGraphic(AssetPaths.circlePNG__png);
-		_barBeatsKeys.color = FlxColor.BLUE;
-		add(_barBeatsKeys);
-		
+
 
 		add(_grpHackables);
 		
@@ -131,6 +126,16 @@ class PlayState extends FlxState
 		add(_map.foregroundObjects);
 		add(_map.objectsLayer);
 		add(_map.collisionTiles);
+		
+				
+		_barBeats = new FlxSprite(30, 75).loadGraphic(AssetPaths.circlePNG__png);
+		_barBeats.color = FlxColor.RED;
+		add(_barBeats);
+		
+		_barBeatsKeys = new FlxSprite(42, 75).loadGraphic(AssetPaths.circlePNG__png);
+		_barBeatsKeys.color = FlxColor.BLUE;
+		add(_barBeatsKeys);
+		
 		
 		_player = new Player(player_start.x, player_start.y);
 		add(_player);
@@ -172,6 +177,8 @@ class PlayState extends FlxState
 	
 	private function reloadMap():Void
 	{
+		FlxG.camera.fade(FlxColor.BLACK, 0.7, true);
+		
 		remove(_map.backgroundLayer);
 		remove(_map.imagesLayer);
 		remove(_map.BGObjects);
@@ -269,9 +276,11 @@ class PlayState extends FlxState
 				hackObjsNear += 1;
 				if (FlxG.keys.justPressed.SPACE && !_player.isHacking && !e.canSeePlayer)
 				{
-					openSubState(new HackSubState(_song));
+					HackSubState.curOutcome = HackSubState.Outcome.NONE;
 					_player.isHacking = true;
 					e.isBeingHacked = true;
+					
+					openSubState(new HackSubState(_song));
 				}
 				
 				if (_player.isHacking && HackSubState.curOutcome != HackSubState.Outcome.NONE)
@@ -391,7 +400,7 @@ class PlayState extends FlxState
 		}
 		
 		// vision logic simple
-		if (_map.collidableTileLayers[0].ray(_enemy.getMidpoint(), _player.getMidpoint()) && FlxMath.isDistanceWithin(_player, _enemy, _player.width * 9) && !_player.isDisguised)
+		if (_map.collidableTileLayers[1].ray(_enemy.getMidpoint(), _player.getMidpoint()) && FlxMath.isDistanceWithin(_player, _enemy, _player.width * 9) && !_player.isDisguised)
 		{
 			var rads:Float = Math.atan2(_player.getMidpoint().y - _enemy.getMidpoint().y, _player.getMidpoint().x - _enemy.getMidpoint().x);
 			var degs = FlxAngle.asDegrees(rads);
